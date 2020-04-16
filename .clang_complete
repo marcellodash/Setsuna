@@ -1,0 +1,5 @@
+-Iinclude
+-Isrc
+-Isrc/gui
+-std=c++17
+-Wabi
