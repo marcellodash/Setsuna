@@ -1,18 +1,27 @@
-#include <config.h>
+/*******************************************************************************
+*	<main.c> - github.com/raphasanori/Kazusa
+*	Author: @RaphaSanOri
+*	Content: Main Program Definition
+*
+*	This file is part of the Kazusa app and it's avaiable through the
+*	Custom Victorique BSD License that can be read inside the LICENSE.TXT
+*	provided together with this file or in the original repository here:
+*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*/
+
 #include <kazusa_app.h>
-#include <lzss.h>
-#include <util.h>
+#include <locale.h>
 
 int main(int argc, char* argv[]) {
-	setlocale(LC_ALL, "");
+	init_victorique();
 
 	KazusaApp* app = OpenKazusa(argc, argv);
 
 	switch (app->option[0]) {
-	case L'e':
+	case 'e':
 		KazusaExtract(app);
 		break;
-	case L'p':
+	case 'p':
 		KazusaPack(app);
 		break;
 	default:
@@ -20,5 +29,7 @@ int main(int argc, char* argv[]) {
 		break;
 	}
 	CloseKazusa(app);
+
+	destroy_victorique();
 }
 

@@ -1,7 +1,21 @@
+@echo off
+
 @del Kazusa.exe
+@REM rmdir en /Q /S
+@del neo.pak
 @premake5 gmake2
+@mingw32-make -C external/victorique/build
 @mingw32-make -C build
-@REM @rmdir data\\en /Q /S
-@del data\\neo.pak
-@REM @Kazusa.exe e data\\en.pak data\\en y
-@Kazusa.exe p data\\en data\\neo.pak y
+
+@if "%1"=="" goto build
+@if "%~1"=="d" goto debug
+
+@goto build
+
+:debug
+@lldb -- Kazusa.exe e en.pak en y
+@goto end
+
+:build
+@Kazusa.exe p en neo.pak y
+:end

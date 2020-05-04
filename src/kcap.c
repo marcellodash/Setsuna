@@ -1,11 +1,19 @@
+/*******************************************************************************
+*	<kcap.c> - github.com/raphasanori/Kazusa
+*	Author: @RaphaSanOri
+*	Content: KCAP Archive Function Definitions
+*
+*	This file is part of the Kazusa app and it's avaiable through the
+*	Custom Victorique BSD License that can be read inside the LICENSE.TXT
+*	provided together with this file or in the original repository here:
+*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*/
+
 #include <kcap.h>
-#include <stdlib.h>
-#include <string.h>
 #include <util.h>
 #include <lzss.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include <dirent.h>
-#include <stdio.h>
 #include <string.h>
 
 //Extracting
@@ -15,8 +23,12 @@ KCAPEntry* read_kcapentry(FILE* input) {
 	fread(&new_entry->compressed, 4, 1, input);
 	new_entry->filename = malloc(25);
 	memset(new_entry->filename, 0, 25);
-
 	fread(new_entry->filename, 24, 1, input);
+
+	unsigned char* t = new_entry->filename;
+	new_entry->filename = (unsigned char*)sjis2utf8((char*)t);
+	free(t);
+
 	fread(&new_entry->unknown, 8, 1, input);
 	fread(&new_entry->offset, 4, 1, input);
 	fread(&new_entry->length, 4, 1, input);
@@ -31,22 +43,14 @@ KCAPEntry* read_kcapentry(FILE* input) {
 }
 
 void print_kcapentry(KCAPEntry* entry) {
-	PRINTL(KCAPENTRYBEGIN);
-
-	PRINTL_ASCII(FILENAME, entry->filename);
-	PRINTL_UINT32(COMPRESSED, entry->compressed);
-	PRINTL(TAB);
-	PRINT_DATA(UNKNOWN, 8, &entry->unknown);
-	PRINTL_UINT32(OFFSET, entry->offset);
-	PRINTL_UINT32(LENGTH, entry->length);
-	PRINTL_UINT32(ORIGINALLENGTH, entry->orig_length);
-	if (entry->directory) {
-		PRINTL(ISDIRECTORY);
-	} else {
-		PRINTL(ISFILE);
-	}
-
-	PRINTL(KCAPENTRYEND);
+	printf("Name %s\n\
+		Compressed %d\n\
+		UNK %llx\n\
+		Offset %d\n\
+		Lenght %d\n\
+		OLenght %d\n\
+		DirMark? %d\n", entry->filename, entry->compressed, entry->unknown, entry->offset, entry->length,
+	       entry->orig_length, entry->directory);
 
 }
 
@@ -59,18 +63,21 @@ void free_kcapentry(KCAPEntry* entry) {
 	}
 }
 
-int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
+int extract_kcap(FILE* input_file_handle, char* output_path) {
 
 	//Begin extraction
 	fseek(input_file_handle, 12, SEEK_SET);
-	uint32_t num_of_entries = read_uint32_t(input_file_handle);
-	PRINTL_UINT32(FILE_HAVE_N_ENTRIES, num_of_entries);
-	PRINTL(NEW_LINE);
 
-	wchar_t* cur_dir = copy_string(output_path);
+	uint32_t num_of_entries;
+	fread(&num_of_entries, 4, 1, input_file_handle);
+
+	printf("Num of entries found = %d\n", num_of_entries);
+
+	char* cur_dir = copy_string(output_path);
 	bool last_was_dir = false;
 	long save_file_pos = ftell(input_file_handle);
 	int entries_got = 0;
+
 
 	for (int i = 0; i < num_of_entries; i++) {
 		//Restore file pos
@@ -78,22 +85,21 @@ int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
 		//Read new entry
 		KCAPEntry* a = read_kcapentry(input_file_handle);
 		//Convert filename
-		wchar_t* fnamew = convert_string((char*)a->filename);
 
 		if (a->directory) {
 			if (last_was_dir) {
-				wchar_t* old_cur = cur_dir;
-				cur_dir = join_path(cur_dir, fnamew);
+				char* old_cur = cur_dir;
+				cur_dir = join_path_win(cur_dir, (char*)a->filename);
 				free(old_cur);
 			} else {
-				wchar_t* old_cur = cur_dir;
-				cur_dir = join_path(output_path, fnamew);
+				char* old_cur = cur_dir;
+				cur_dir = join_path_win(output_path, (char*)a->filename);
 				if (old_cur != NULL) {
 					free(old_cur);
 				}
 			}
-			_wmkdir(cur_dir);
-			PRINT_LOG_INDEX(KCAPENTRY_LOG_FORMAT, cur_dir, i + 1, -1);
+			mkdir(cur_dir);
+			printf("%s (%d) (c=%d)\n", cur_dir, i + 1, -1);
 
 			//Save file pos to continue extraction
 			save_file_pos = ftell(input_file_handle);
@@ -108,8 +114,8 @@ int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
 
 			fseek(input_file_handle, a->offset, SEEK_SET);
 			if (a->compressed == 1) {
-				compressed_length = read_uint32_t(input_file_handle);
-				original_length = read_uint32_t(input_file_handle);
+				fread(&compressed_length, 4, 1, input_file_handle);
+				fread(&original_length, 4, 1, input_file_handle);
 			} else {
 				compressed_length = a->length;
 				original_length = a->length;
@@ -135,7 +141,7 @@ int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
 					original_length = compressed_length;
 					//And alter the position inside the file
 					fseek(input_file_handle, save_file_pos, SEEK_SET);
-					PRINTL(FILE_NO_DATA);
+					printf("No data on file\n");
 				}
 			}
 
@@ -166,11 +172,11 @@ int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
 
 			FILE *file_to_write;
 
-			wchar_t* full_path = join_path(cur_dir, fnamew);
+			char* full_path = join_path_win(cur_dir, (char*)a->filename);
 			normalize_string(full_path);
-			PRINT_LOG_INDEX(KCAPENTRY_LOG_FORMAT, full_path, i + 1, a->compressed);
+			printf("%s (%d) (c=%d)\n", full_path, i + 1, a->compressed);
 
-			file_to_write = _wfopen(full_path, L"wb");
+			file_to_write = fopen(full_path, "wb");
 			fwrite(output_buffer, output_size, 1, file_to_write);
 			fclose(file_to_write);
 
@@ -180,14 +186,13 @@ int extract_kcap(FILE* input_file_handle, wchar_t* output_path) {
 		}
 		last_was_dir = a->directory;
 
-		free(fnamew);
 		free_kcapentry(a);
 		entries_got = i + 1;
 	}
 	if (entries_got == num_of_entries) {
-		PRINTL(ALL_ENTRIES_PROCESSED);
+		printf("All entries processed!\n");
 	} else {
-		PRINTL(SOME_ENTRIES_NOT_PROCESSED);
+		printf("Some entries may not have being processed!\n");
 	}
 
 	return 0;
@@ -225,10 +230,10 @@ void FreeKazusaEntry(KazusaEntry* entry) {
 }
 
 
-int PopulateKazusaEntry(KazusaEntry* entry, wchar_t *path) {
-	_WDIR *dir;
-	struct _wdirent *ent;
-	if (isDirectoryEmpty(path)) {
+int PopulateKazusaEntry(KazusaEntry* entry, char *path) {
+	DIR *dir;
+	struct dirent *ent;
+	if (is_dir_empty(path)) {
 		return 0;
 	}
 	KazusaEntry* head = NewKazusaEntry();
@@ -236,17 +241,17 @@ int PopulateKazusaEntry(KazusaEntry* entry, wchar_t *path) {
 	entry->inside = head;
 	KazusaEntry* last = head;
 
-	if ((dir = _wopendir (entry->name)) != NULL) {
-		while ((ent = _wreaddir (dir)) != NULL) {
-			if (wcscmp(ent->d_name, L".") && wcscmp(ent->d_name, L"..")) {
-				wchar_t* full_path = join_path(path, ent->d_name);
+	if ((dir = opendir (entry->name)) != NULL) {
+		while ((ent = readdir (dir)) != NULL) {
+			if (strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
+				char* full_path = join_path_win(path, ent->d_name);
 				current->name = copy_string(full_path);
 				current->folder = is_dir(full_path);
-
+				printf("%s\n", current->name);
 				if (current->folder) {
 					PopulateKazusaEntry(current, full_path);
 				} else {
-					LoadToArray(full_path, &current->data, &current->size);
+					file_load(full_path, &current->data, &current->size);
 				}
 
 				free(full_path);
@@ -261,14 +266,14 @@ int PopulateKazusaEntry(KazusaEntry* entry, wchar_t *path) {
 			FreeKazusaEntry(current);
 			last->next = NULL;
 		}
-		_wclosedir (dir);
+		closedir (dir);
 		return 0;
 	} else {
 		return -1;
 	}
 }
 
-KazusaEntry* InitKazusaPackageList(wchar_t *path) {
+KazusaEntry* InitKazusaPackageList(char *path) {
 	KazusaEntry* root = NewKazusaEntry();
 	root->folder = true;
 	root->name = copy_string(path);
@@ -284,9 +289,9 @@ void PrintKazusaPackageList(KazusaEntry* root, int level) {
 	current = root;
 	while (current != NULL) {
 		for (int i = 0; i < level; i++) {
-			wprintf (TAB);
+			printf("\t");
 		}
-		wprintf (KAZUSAENTRILOGGER, current->name, current->folder ? DIR_LABEL : FILE_LABEL);
+		printf ("%s is %s" , current->name, current->folder ? "DIR" : "FILE");
 		if (current->folder) {
 			PrintKazusaPackageList(current->inside, level + 1);
 		}
@@ -313,6 +318,24 @@ void PackIt(KazusaEntry* root, FILE* handle, bool compressed) {
 	}
 }
 
+
+char* w2c(wchar_t* string) {
+	int new_string_size = (wcslen(string) + 2) * sizeof(char);
+	char* new_string = malloc(new_string_size);
+	memset(new_string, 0, new_string_size);
+	wcstombs(new_string, string, new_string_size);
+	return new_string;
+}
+
+wchar_t* convert_string(char* string) {
+	int new_string_size = (strlen(string) + 1) * sizeof(wchar_t);
+	wchar_t* new_string = malloc(new_string_size);
+	memset(new_string, 0, new_string_size);
+	mbstowcs(new_string, string, new_string_size);
+	return new_string;
+}
+
+
 uint32_t IndexIt(KazusaEntry* root, FILE* handle, int total_written, int processed_entries, bool compressed) {
 	KazusaEntry* current;
 	current = root;
@@ -329,12 +352,17 @@ uint32_t IndexIt(KazusaEntry* root, FILE* handle, int total_written, int process
 				fwrite(&compressed_marker, 4, 1, handle);
 			}
 			denormalize_string(current->name);
-			wchar_t* temp = _wstrrchr(current->name, '\\');
+			char* temp = find_last_ofchar(current->name, '\\');
 			temp++;
 
-			char* temp2 = w2c(temp);
-			int size = strlen(temp2) + 1;
+			int size;
+			char* temp2 = utf82sjis(temp, &size);
+			//size = strlen(temp2) + 1;
 			fwrite(temp2, size, 1, handle);
+			printf("%d\n", size);
+
+
+
 
 			for (int i = 0; i < 24 - size; i++) {
 				fwrite(&nothing_marker, 1, 1, handle);

@@ -1,9 +1,36 @@
+# Victorique
+
+
+A tool to handle files used in the various versions of the Visual Novel White Album 2.<br>
+
+<img align="left" width="230" src="https://i.imgur.com/F8suY5v.png">
+
+##### What it can do?
+Currently it can handle extracting and repacking .pak files.<br>
+
+##### How do I build it?
+
+It can be easily built with a C compiler (with support to C11), premake5, and the sub-module Victorique.<br>
+
+##### Multi-platform?
+
+It's tested only on Windows 10, but can compile even in XP, probably.<br>
+But can probably work on other systems with a bit of work!<br>
+Also known as, rewrite the encode convertion functions that use the Windows API!<br>
+#### Status
+Version 1.0a<br>
+[![Build Status](https://travis-ci.org/raphasanori/Kazusa.svg?branch=master)](https://travis-ci.org/raphasanori/Kazusa)<hr>
+<sub>Kazusa © Copyright  2020 - raphasanori<br>
+Kazusa Touma image belongs to Leaf and their creators!<br>This library has no connection with them, the image on the side is just for decoration.</sub>
+
+
+
+
 # Kazusa
-A tool to handle files used in the various versions of the Visual Novel White Album 2
 
-Currently it can handle extracting and repacking .pak files.
 
-It was tested on Windows 10, but can probably work on other systems with a bit of work.
+
+.
 
 #### Usage
 
