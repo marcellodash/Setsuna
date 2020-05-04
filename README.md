@@ -3,7 +3,7 @@
 
 A tool to handle files used in the various versions of the Visual Novel White Album 2, it can currently handle extracting and repacking .pak files.<br>
 
-<img align="left" width="230" src="https://i.imgur.com/hNF3WVe.png">
+<img align="left" width="250" src="https://i.imgur.com/F8suY5v.png">
 
 ##### How it is done?
 Check the [Wiki](https://github.com/raphasanori/Kazusa/wiki) to reverse enginnering documentation.<br>
