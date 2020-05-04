@@ -1,12 +1,12 @@
 # Victorique
 
 
-A tool to handle files used in the various versions of the Visual Novel White Album 2.<br>
+A tool to handle files used in the various versions of the Visual Novel White Album 2, it can currently handle extracting and repacking .pak files.<br>
 
 <img align="left" width="230" src="https://i.imgur.com/F8suY5v.png">
 
-##### What it can do?
-Currently it can handle extracting and repacking .pak files.<br>
+##### How it is done?
+Check the [Wiki](https://github.com/raphasanori/Kazusa/wiki) to reverse enginnering documentation.<br>
 
 ##### How do I build it?
 
