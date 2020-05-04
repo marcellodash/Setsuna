@@ -10,7 +10,7 @@ Check the [Wiki](https://github.com/raphasanori/Kazusa/wiki) to reverse enginner
 
 ##### How do I build it?
 
-It can be easily built with a C compiler (with support to C11), premake5, and the sub-module Victorique.<br>
+Check [Building](https://github.com/raphasanori/Kazusa/wiki/Building).
 
 ##### Multi-platform?
 
