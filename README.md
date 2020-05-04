@@ -20,4 +20,4 @@ Also known as, rewrite the encode convertion functions that use the Windows API!
 Version 1.5a<br>
 [![Build Status](https://travis-ci.org/raphasanori/Kazusa.svg?branch=master)](https://travis-ci.org/raphasanori/Kazusa)<hr>
 <sub>Kazusa © Copyright  2020 - raphasanori<br>
-Kazusa Touma image belongs to Leaf and their creators!<br>This library has no connection with them, the image on the side is just for decoration.</sub>
+Kazusa Touma image belongs to Leaf and their creation personnel!<br>This library has no connection with them, the image on the side is just for decoration.</sub>
