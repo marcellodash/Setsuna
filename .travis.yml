@@ -18,4 +18,4 @@ install:
 
 script: 
   - dir
-  - .\\premake5.exe gmake2 && mingw32-make -C build
+  - .\\premake5.exe gmake2 && mingw32-make -C external/victorique/build && mingw32-make -C build
