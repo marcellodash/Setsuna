@@ -1,0 +1,3 @@
+[submodule "external/victorique"]
+	path = external/victorique
+	url = https://github.com/raphasanori/victorique.git
