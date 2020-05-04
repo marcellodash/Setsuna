@@ -16,4 +16,4 @@
 #include <victorique/string.h>
 #include <stdio.h>
 
-#define SOFTWARE_VERSION "v1.0"
+#define SOFTWARE_VERSION "v1.5a"
