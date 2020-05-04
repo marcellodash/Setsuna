@@ -1,0 +1,21 @@
+os: windows
+language: c
+compiler: gcc
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
+
+before_install:
+  - git submodule update --init --recursive
+  - choco install unzip
+  - wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha15/premake-5.0.0-alpha15-windows.zip
+
+install: 
+  - unzip premake-5.0.0-alpha15-windows.zip
+  - dir
+
+script: 
+  - dir
+  - .\\premake5.exe gmake2 && mingw32-make -C build
