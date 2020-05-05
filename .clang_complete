@@ -1,6 +1,5 @@
 -Iinclude
 -Iexternal/victorique/include
 -Isrc
--Isrc/gui
--std=c++17
+-std=c11
 -Wabi
