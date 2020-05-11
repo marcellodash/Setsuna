@@ -1,6 +1,7 @@
 @echo off
+@set project_name=Kazusa
 
-@del Kazusa.exe
+@del %project_name%.exe
 @REM rmdir en /Q /S
 @del neo.pak
 @premake5 gmake2
@@ -13,9 +14,9 @@
 @goto build
 
 :debug
-@lldb -- Kazusa.exe e en.pak en y
+@lldb -- %project_name%.exe e en.pak en y
 @goto end
 
 :build
-@Kazusa.exe p en neo.pak y
+@%project_name%.exe p en neo.pak y
 :end
