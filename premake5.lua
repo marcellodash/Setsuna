@@ -1,8 +1,8 @@
-workspace "Kazusa"
+workspace "Setsuna"
 	location "build"
    	configurations { "Debug", "Release" }
 
-project "Kazusa"
+project "Setsuna"
 	kind "ConsoleApp"
 	language "C"
 	targetdir "."

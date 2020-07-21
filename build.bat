@@ -1,5 +1,5 @@
 @echo off
-@set project_name=Kazusa
+@set project_name=Setsuna
 
 @del %project_name%.exe
 @REM rmdir en /Q /S
