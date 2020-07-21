@@ -1,12 +1,12 @@
 /*******************************************************************************
-*	<config.h> - github.com/raphasanori/Kazusa
+*	<config.h> - github.com/raphasanori/Setsuna
 *	Author: @RaphaSanOri
 *	Content: General definitions
 *
-*	This file is part of the Kazusa app and it's avaiable through the
+*	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
 */
 
 #pragma once

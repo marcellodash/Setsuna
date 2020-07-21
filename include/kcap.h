@@ -1,12 +1,12 @@
 /*******************************************************************************
-*	<kcap.h> - github.com/raphasanori/Kazusa
+*	<kcap.h> - github.com/raphasanori/Setsuna
 *	Author: @RaphaSanOri
 *	Content: KCAP Archive Function Declarations
 *
-*	This file is part of the Kazusa app and it's avaiable through the
+*	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
 */
 
 #pragma once
@@ -34,26 +34,26 @@ int extract_kcap(FILE* input_file_handle, char* output_path);
 
 //Packing
 
-typedef struct KazusaEntry {
+typedef struct SetsunaEntry {
 	char* name;
 	bool folder;
 	char* data;
 	uint32_t size;
-	struct KazusaEntry* inside;
-	struct KazusaEntry* next;
+	struct SetsunaEntry* inside;
+	struct SetsunaEntry* next;
 	int is_root;
-} KazusaEntry;
+} SetsunaEntry;
 
-KazusaEntry* NewKazusaEntry();
-void FreeKazusaEntry(KazusaEntry* entry);
+SetsunaEntry* NewSetsunaEntry();
+void FreeSetsunaEntry(SetsunaEntry* entry);
 extern int number_of_entries;
-int PopulateKazusaEntry(KazusaEntry* entry, char *path);
-KazusaEntry* InitKazusaPackageList(char *path);
-void PrintKazusaPackageList(KazusaEntry* root, int level);
-void KazusaPackageListFree(KazusaEntry* root);
+int PopulateSetsunaEntry(SetsunaEntry* entry, char *path);
+SetsunaEntry* InitSetsunaPackageList(char *path);
+void PrintSetsunaPackageList(SetsunaEntry* root, int level);
+void SetsunaPackageListFree(SetsunaEntry* root);
 
-void PackIt(KazusaEntry* root, FILE* handle, bool compressed);
-uint32_t IndexIt(KazusaEntry* root, FILE* handle, int total_written,
+void PackIt(SetsunaEntry* root, FILE* handle, bool compressed);
+uint32_t IndexIt(SetsunaEntry* root, FILE* handle, int total_written,
                  int processed_entries, bool compressed);
 
 void write_kcap_header(FILE* file);
