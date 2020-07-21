@@ -1,12 +1,12 @@
 /*******************************************************************************
-*	<lzss.c> - github.com/raphasanori/Kazusa
+*	<lzss.c> - github.com/raphasanori/Setsuna
 *	Author: @RaphaSanOri
 *	Content: Custom LZSS Compression Definitions
 *
-*	This file is part of the Kazusa app and it's avaiable through the
+*	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
 */
 
 #include <lzss.h>

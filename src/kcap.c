@@ -1,12 +1,12 @@
 /*******************************************************************************
-*	<kcap.c> - github.com/raphasanori/Kazusa
+*	<kcap.c> - github.com/raphasanori/Setsuna
 *	Author: @RaphaSanOri
 *	Content: KCAP Archive Function Definitions
 *
-*	This file is part of the Kazusa app and it's avaiable through the
+*	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Kazusa/blob/master/LICENSE.TXT
+*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
 */
 
 #include <kcap.h>
@@ -201,8 +201,8 @@ int extract_kcap(FILE* input_file_handle, char* output_path) {
 //Packing
 int number_of_entries;
 
-KazusaEntry* NewKazusaEntry() {
-	KazusaEntry* entry = malloc(sizeof(KazusaEntry));
+SetsunaEntry* NewSetsunaEntry() {
+	SetsunaEntry* entry = malloc(sizeof(SetsunaEntry));
 	entry->name = NULL;
 	entry->folder = false;
 	entry->inside = NULL;
@@ -214,7 +214,7 @@ KazusaEntry* NewKazusaEntry() {
 	return entry;
 }
 
-void FreeKazusaEntry(KazusaEntry* entry) {
+void FreeSetsunaEntry(SetsunaEntry* entry) {
 	if (entry != NULL) {
 		if (entry->name != NULL) {
 			free(entry->name);
@@ -230,16 +230,16 @@ void FreeKazusaEntry(KazusaEntry* entry) {
 }
 
 
-int PopulateKazusaEntry(KazusaEntry* entry, char *path) {
+int PopulateSetsunaEntry(SetsunaEntry* entry, char *path) {
 	DIR *dir;
 	struct dirent *ent;
 	if (is_dir_empty(path)) {
 		return 0;
 	}
-	KazusaEntry* head = NewKazusaEntry();
-	KazusaEntry* current = head;
+	SetsunaEntry* head = NewSetsunaEntry();
+	SetsunaEntry* current = head;
 	entry->inside = head;
-	KazusaEntry* last = head;
+	SetsunaEntry* last = head;
 
 	if ((dir = opendir (entry->name)) != NULL) {
 		while ((ent = readdir (dir)) != NULL) {
@@ -249,21 +249,21 @@ int PopulateKazusaEntry(KazusaEntry* entry, char *path) {
 				current->folder = is_dir(full_path);
 				printf("%s\n", current->name);
 				if (current->folder) {
-					PopulateKazusaEntry(current, full_path);
+					PopulateSetsunaEntry(current, full_path);
 				} else {
 					file_load(full_path, &current->data, &current->size);
 				}
 
 				free(full_path);
 
-				KazusaEntry* new_entry = NewKazusaEntry();
+				SetsunaEntry* new_entry = NewSetsunaEntry();
 				current->next = new_entry;
 				last = current;
 				current = new_entry;
 			}
 		}
 		if (current->name == NULL) {
-			FreeKazusaEntry(current);
+			FreeSetsunaEntry(current);
 			last->next = NULL;
 		}
 		closedir (dir);
@@ -273,19 +273,19 @@ int PopulateKazusaEntry(KazusaEntry* entry, char *path) {
 	}
 }
 
-KazusaEntry* InitKazusaPackageList(char *path) {
-	KazusaEntry* root = NewKazusaEntry();
+SetsunaEntry* InitSetsunaPackageList(char *path) {
+	SetsunaEntry* root = NewSetsunaEntry();
 	root->folder = true;
 	root->name = copy_string(path);
-	PopulateKazusaEntry(root, path);
+	PopulateSetsunaEntry(root, path);
 	number_of_entries--;
 	root->is_root = 1;
 
 	return root;
 }
 
-void PrintKazusaPackageList(KazusaEntry* root, int level) {
-	KazusaEntry* current;
+void PrintSetsunaPackageList(SetsunaEntry* root, int level) {
+	SetsunaEntry* current;
 	current = root;
 	while (current != NULL) {
 		for (int i = 0; i < level; i++) {
@@ -293,14 +293,14 @@ void PrintKazusaPackageList(KazusaEntry* root, int level) {
 		}
 		printf ("%s is %s" , current->name, current->folder ? "DIR" : "FILE");
 		if (current->folder) {
-			PrintKazusaPackageList(current->inside, level + 1);
+			PrintSetsunaPackageList(current->inside, level + 1);
 		}
 		current = current->next;
 	}
 }
 
-void PackIt(KazusaEntry* root, FILE* handle, bool compressed) {
-	KazusaEntry* current;
+void PackIt(SetsunaEntry* root, FILE* handle, bool compressed) {
+	SetsunaEntry* current;
 	current = root;
 	while (current != NULL) {
 		if (!current->folder) {
@@ -336,8 +336,8 @@ wchar_t* convert_string(char* string) {
 }
 
 
-uint32_t IndexIt(KazusaEntry* root, FILE* handle, int total_written, int processed_entries, bool compressed) {
-	KazusaEntry* current;
+uint32_t IndexIt(SetsunaEntry* root, FILE* handle, int total_written, int processed_entries, bool compressed) {
+	SetsunaEntry* current;
 	current = root;
 	uint32_t compressed_marker = 0;
 	uint32_t folder_marker = 3435973836;
@@ -390,16 +390,16 @@ uint32_t IndexIt(KazusaEntry* root, FILE* handle, int total_written, int process
 	return total_written;
 }
 
-void KazusaPackageListFree(KazusaEntry* root) {
-	KazusaEntry* current;
+void SetsunaPackageListFree(SetsunaEntry* root) {
+	SetsunaEntry* current;
 	current = root;
 	while (current != NULL) {
 		if (current->folder) {
-			KazusaPackageListFree(current->inside);
+			SetsunaPackageListFree(current->inside);
 		}
-		KazusaEntry* s = current;
+		SetsunaEntry* s = current;
 		current = current->next;
-		FreeKazusaEntry(s);
+		FreeSetsunaEntry(s);
 	}
 }
 
