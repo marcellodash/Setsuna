@@ -1,18 +1,22 @@
 /*******************************************************************************
-*	<setsuna_app.c> - github.com/raphasanori/Setsuna
-*	Author: @RaphaSanOri
+*	<setsuna_app.c> - github.com/hiroshil/Setsuna
+*	Author: @RaphaSanOri,@Hiroshil
 *	Content: App Interface Definitions
 *
 *	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
+*	github.com/hiroshil/Setsuna/blob/master/LICENSE.TXT
 */
 
 #include <setsuna_app.h>
 #include <kcap.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <locale.h>
+#include <util.h>
+//#include <windows.h>
+
 
 SetsunaApp* OpenSetsuna(int argc, char* argv[]) {
 	SetsunaApp* handle = (SetsunaApp*)malloc(sizeof(SetsunaApp));
@@ -21,6 +25,8 @@ SetsunaApp* OpenSetsuna(int argc, char* argv[]) {
 	handle->output = NULL;
 	handle->skip = NULL;
 	handle->input_file = NULL;
+	//SetConsoleOutputCP(65001);
+	setlocale(LC_ALL, "en_US.utf8");
 
 	if (argc <= 1) {
 		SetsunaHelp();
@@ -162,7 +168,8 @@ void SetsunaPack(SetsunaApp* handle) {
 		printf("Entries found = %d\n", number_of_entries);
 
 		FILE *file_to_write;
-		file_to_write = fopen(handle->output, "wb");
+		//file_to_write = fopen(handle->output, "wb");
+		file_to_write = _wfopen(GetWC(string_to_hex(handle->output), strlen(handle->output)), L"wb");
 		write_kcap_header(file_to_write);
 
 		printf("Indexing...\n");

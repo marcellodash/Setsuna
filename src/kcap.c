@@ -1,12 +1,12 @@
 /*******************************************************************************
-*	<kcap.c> - github.com/raphasanori/Setsuna
-*	Author: @RaphaSanOri
+*	<kcap.c> - github.com/hiroshil/Setsuna
+*	Author: @RaphaSanOri,@Hiroshil
 *	Content: KCAP Archive Function Definitions
 *
 *	This file is part of the Setsuna app and it's avaiable through the
 *	Custom Victorique BSD License that can be read inside the LICENSE.TXT
 *	provided together with this file or in the original repository here:
-*	github.com/raphasanori/Setsuna/blob/master/LICENSE.TXT
+*	github.com/hiroshil/Setsuna/blob/master/LICENSE.TXT
 */
 
 #include <kcap.h>
@@ -17,6 +17,32 @@
 #include <string.h>
 
 //Extracting
+
+char* join_path_s(char* s1, char* s2) {
+	char* s3 = (char *)malloc(2 + strlen(s1) + strlen(s2));
+	char* s0[1];
+	*s0 = '\\';
+	strcpy(s3, s1);
+	strcat(s3, s0);
+	strcat(s3, s2);
+	return s3;
+}
+
+char* w2c(wchar_t* string) {
+	int new_string_size = (wcslen(string) + 2) * sizeof(char);
+	char* new_string = malloc(new_string_size);
+	memset(new_string, 0, new_string_size);
+	wcstombs(new_string, string, new_string_size);
+	return new_string;
+}
+
+wchar_t* convert_string(char* string) {
+	int new_string_size = (strlen(string) + 1) * sizeof(wchar_t);
+	wchar_t* new_string = malloc(new_string_size);
+	memset(new_string, 0, new_string_size);
+	mbstowcs(new_string, string, new_string_size);
+	return new_string;
+}
 
 KCAPEntry* read_kcapentry(FILE* input) {
 	KCAPEntry* new_entry = malloc(sizeof(KCAPEntry));
@@ -89,11 +115,13 @@ int extract_kcap(FILE* input_file_handle, char* output_path) {
 		if (a->directory) {
 			if (last_was_dir) {
 				char* old_cur = cur_dir;
-				cur_dir = join_path_win(cur_dir, (char*)a->filename);
+				//cur_dir = join_path_win(cur_dir, (char*)a->filename);
+				cur_dir = join_path_s(cur_dir, (char*)a->filename);
 				free(old_cur);
 			} else {
 				char* old_cur = cur_dir;
-				cur_dir = join_path_win(output_path, (char*)a->filename);
+				//cur_dir = join_path_win(output_path, (char*)a->filename);
+				cur_dir = join_path_s(output_path, (char*)a->filename);
 				if (old_cur != NULL) {
 					free(old_cur);
 				}
@@ -173,10 +201,12 @@ int extract_kcap(FILE* input_file_handle, char* output_path) {
 			FILE *file_to_write;
 
 			char* full_path = join_path_win(cur_dir, (char*)a->filename);
+			//wchar_t* full_path = join_path_win(cur_dir, a->filename);
 			normalize_string(full_path);
-			printf("%s (%d) (c=%d)\n", full_path, i + 1, a->compressed);
+			printf("%s (%d) (c=%d)\n\n", full_path, i + 1, a->compressed);
 
-			file_to_write = fopen(full_path, "wb");
+			//file_to_write = fopen(full_path, "wb");
+			file_to_write = _wfopen(GetWC(string_to_hex(full_path), strlen(full_path)), L"wb");
 			fwrite(output_buffer, output_size, 1, file_to_write);
 			fclose(file_to_write);
 
@@ -316,23 +346,6 @@ void PackIt(SetsunaEntry* root, FILE* handle, bool compressed) {
 		}
 		current = current->next;
 	}
-}
-
-
-char* w2c(wchar_t* string) {
-	int new_string_size = (wcslen(string) + 2) * sizeof(char);
-	char* new_string = malloc(new_string_size);
-	memset(new_string, 0, new_string_size);
-	wcstombs(new_string, string, new_string_size);
-	return new_string;
-}
-
-wchar_t* convert_string(char* string) {
-	int new_string_size = (strlen(string) + 1) * sizeof(wchar_t);
-	wchar_t* new_string = malloc(new_string_size);
-	memset(new_string, 0, new_string_size);
-	mbstowcs(new_string, string, new_string_size);
-	return new_string;
 }
 
 
